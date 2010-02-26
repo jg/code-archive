@@ -1,0 +1,18 @@
+(define (product-i term a next b)
+  (define (iter a result)
+    (if (> a b)
+	result
+	(iter (next a) (* result (term a)))))
+  (iter a 1))
+    
+;from John Wallis formula (XVII century)
+; pi/4 = (2*4*4*6*6*8*...)/(3*3*5*5*7*7*...)
+(define (pi n)
+  (define (calc x)
+    (/ (if (even? x)
+	   (+ x 2)
+	   (+ x 1))
+       (if (even? x)
+	   (+ x 1)
+	   (+ x 2))))
+  (* 4 (product-i calc 1 inc n)))
