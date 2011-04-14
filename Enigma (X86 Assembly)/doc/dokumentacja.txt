@@ -1,0 +1,65 @@
+Design
+======
+
+
+Implementacja
+=============
+
+Bębny enigmy reprezentowane przez tablice indeksowane numerami styków
+wejściowych i.e. D1L[0]  
+  D1L, D1R - bęben pierwszy
+  D2L, D2R - bęben drugi
+  D3L, D3R - bęben trzeci
+  DR       - bęben odwracający
+
+Sens oznaczeń: 
+  D1L[x] to numer styku na który zostanie przekierowany sygnał idący ze styku
+  wejściowego 'x' po lewej stronie bębna przez bęben pierwszy 
+  
+  D1R[x] to numer styku na który zostanie przekierowany sygnał idący ze styku
+  wejściowego 'x' po prawej stronie bębna przez bęben pierwszy
+
+Funkcje:
+
+  void shl(int *tab) 
+    obraca każdy element tablicy o jedną pozycję w lewo 
+    (pierwszy wskakuje na pozycję ostatniego) 
+
+  void shr(int *tab)    
+    obraca każdy element tablicy o jedną pozycję w prawo 
+    (ostatni wskakuje na pozycję pierwszego) 
+
+  void rotate_drums()   
+    obraca tablice pierwszego bębna (shr o jedną pozycję),
+    jeśli ten wykonał się pełny obrót, obraca tablicę drugiego
+    bębna 
+
+  int encrypt(int c)    
+    zwraca indeks styku wyjściowego na którym pojawił się
+    sygnał przyłożeniu sygnału do styku o indeksie c
+
+  char encrypt_char(char c)
+    zwraca zakodowany znak ascii 
+  
+  int index(char c)     
+    zwraca indeks styku przyporządkowany znakowi 'c'
+
+  char character(int i) 
+    zwraca znak przyporządkowany indeksowi 'i'
+
+  void init_drums() 
+    inicjalizuje tablice bębnów wartościami wczytanymi z pliku
+
+  void init_drum_positions() 
+    inicjalizuje początkowe położenie bębnów
+  
+  string encrypt_string(string s)
+    zwraca zakodowany ciąg znaków
+
+Testy
+=====
+
+Program C++ jest programem wzorcowym, na jego podstawie jest implementowany
+i weryfikowany program MIPS.
+
+

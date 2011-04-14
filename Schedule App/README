@@ -1,0 +1,19 @@
+Task
+----
+    'Stworzyć system klas oraz program terminarza. Powinien on umożliwiać wprowadzanie zdarzeń o różnym stopniu określenia miejsca zdarzenia w czasie, np. 1 zdarzenie: 'wysłać kartkę urodzinową', czas: do 15 marca, 2' zdarzenie: ''wizyta u lekarza'', czas: 20.03.2003 godz 17.30, 3' zdarzenie: odwiedzić kolegę, czas: jutro. Program powinien pozwalać na wypisanie na życzenie użytkownika listy zdarzeń na: bieżący rok, miesiąc, tydzień, dzień, godzinę. Program powinien być mało uciążliwy w użytkowaniu.
+
+Requirements
+------------
+  * libboost-1.38, libboost-date-time-1.38, libboost-regex-1.38
+  * googletest-1.4.0 (for 'make check')
+
+Compiling
+---------
+  Change GTEST_PATH in Makefile after installing googletest testing suite
+
+Testing
+-------
+  * run make check to run tests in tests/unit
+  * It is possible to redirect input to the program through a posix pipe, see tests/system for examples (./schedule < test.txt, be sure to end the testfile with 'q').
+
+

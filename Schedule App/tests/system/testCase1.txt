@@ -1,0 +1,5 @@
+ae "MyEvent1" today
+ae "MyEvent1" 2010-03-18
+weekly
+la
+q

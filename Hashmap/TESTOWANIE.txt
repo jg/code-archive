@@ -1,0 +1,10 @@
+Lab 2
+
+Tablica haszujaca.
+
+TESTOWANIE:
+1. test.cc - po przegraniu do swojego katalogu nalezy dostosowac tak, 
+   aby uzywal wlasciwej funkcji haszujacej i porownujacej.
+   Istnieje mozliwosc przelaczenia pomiedzy wlasna implementacja a std::map
+   poprzez zmiane "#if 1" na "#if 0" w linii 5. 
+2. budowac przy pomocy makefile_tests

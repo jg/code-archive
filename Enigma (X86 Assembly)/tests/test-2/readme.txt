@@ -1,0 +1,2 @@
+Bębny rozmiaru 8
+

@@ -1,0 +1,11 @@
+ae "wysłać kartkę urodzinową" 15 marca
+ae "wizyta u lekarza" 20.03.2003 godz 17.30
+ae "odwiedzić kolegę" jutro
+listAll
+listYear
+listWeek
+listDay
+listHour
+save
+read
+q
