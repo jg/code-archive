@@ -1,0 +1,2 @@
+iterator init base class pointer passing?
+blockList.tail->previous->data.fullP() - is inaccessible
