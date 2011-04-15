@@ -1,0 +1,51 @@
+1. Wprowadzenie
+	Test Millera-Rabina jest ulepszonym testem Fermata na pierwszo¶æ. 
+
+	Wy¿sze prawdopodobieñstwo ¿e wskazana liczba jest liczb± pierwsz± 
+	uzyskiwane jest przez : 
+
+		a) Sprawdzanie warunku nie dla jednej (jak w te¶cie Fermata) lecz dla 
+kilku podstaw (co warto zauwa¿yæ i tak nie chroni nas przed tzw. liczbami
+Carmichaela które spe³niaj± twierdzenie Fermata dla ka¿dej podstawy a < n i (a,n) = 1)
+
+		b) Sprawdzanie czy nie zosta³ wykryty tzw. nietrywialny pierwiastek 
+kwadratowy z 1 modulo n ( gdy 'n' jest liczb± pierwsz± istniej± tylko dwa
+trywialne pierwiastki kwadratowe z 1 (mod n) mianowicie x == 1 (mod n) i x == -1 (mod
+n) - dowód poni¿ej)
+
+2. Test Fermata
+	Twierdzenie Fermata: 
+  											a^(n-1) == 1 (mod n)			(1)
+
+	Je¶li wybrana liczba 'n' nie spe³nia (1) to jest z³o¿ona. W przeciwnym
+przypadku jest ona liczb± pierwsz± lub tzw. pseudopierwsz± przy 
+podstawie 'a'. 
+
+2. Test Millera-Rabina
+
+Niech 'a == b (mod p)' oznacza równo¶æ reszt mod p.
+
+												x^2 == 1 (mod p) 
+
+Gdzie p jest liczb± pierwsz± wtedy i tylko wtedy gdy x == 1 (mod
+p) lub x == -1 (mod p)
+Dowód : 
+1)	Fundamentalne twierdzenie algebry dla wielomianu drugiego stopnia w Z_p (wiemy ¿e 1 i -1 na pewno go spe³niaj±) 
+
+2) Za³ó¿my ¿e x jest nietrywialnym pierwiastkiem z 1 (mod p) ró¿nym od 1 i -1.
+x^2 == 1 (mod p)
+(x-1)(x+1) == 0 (mod p)
+p|(x-1)(x+1)
+p|(x-1) lub p|(x+1)
+Lecz p jest liczb± pierwsz± zatem p jest wzglêdnie pierwsz± w stosunku do 
+(x-1) i (x+1) (jako ¿e x != 1 i x != -1)
+
+p|x^2 - 1
+p|(x - 1)(x + 1) 
+p|(x - 1) lub p|(x + 1)
+
+Czyli
+
+x == 1 (mod p) lub x == -1 (mod p)
+
+
