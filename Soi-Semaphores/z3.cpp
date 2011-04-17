@@ -64,118 +64,87 @@ semaphore b1_2 = create_semaphore(1);
 semaphore b2_1 = create_semaphore(1);
 semaphore b2_2 = create_semaphore(1);
 /*}}}*/
+int *count(int fifo) {/*{{{*/
+  // Returns pointer to FIFO element count
+  if ( fifo == FIFO_1 ) 
+    return (int*)shm + FIFO_1_CO;
+  else
+    return (int*)shm + FIFO_2_CO;
+}/*}}}*/
+int *front(int fifo) {/*{{{*/
+  // Returns pointer to first FIFO element 
+  if ( fifo == FIFO_1 ) 
+    return (int*)shm + FIFO_1_FO;
+  else
+    return (int*)shm + FIFO_2_FO;
+  
+}/*}}}*/
+int size(int fifo) {/*{{{*/
+  // FIFO size 
+  if ( fifo == FIFO_1 ) 
+    return FIFO_1_SIZE;
+  else if ( fifo == FIFO_2 )
+    return FIFO_2_SIZE;
+}/*}}}*/
+int offset(int fifo) {/*{{{*/
+  // FIFO offset
+  if ( fifo == FIFO_1 ) 
+    return FIFO_1_OFFSET;
+  else if ( fifo == FIFO_2 )
+    return FIFO_2_OFFSET;
+}/*}}}*/
 void init_fifo() {/*{{{*/
-  int* count = (int*)shm+FIFO_1_CO;
-  int* front = (int*)shm+FIFO_1_FO;
-  *count = 0;
-  *front = 0;
-  count = (int*)shm+FIFO_2_CO;
-  front = (int*)shm+FIFO_2_FO;
-  *count = 0;
-  *front = 0;
+  *count(FIFO_1) = 0;
+  *front(FIFO_1) = 0;
+
+  *count(FIFO_2) = 0;
+  *front(FIFO_2) = 0;
 
   int *ptr = (int*)shm;
   for ( int i = 0; i < (FIFO_1_SIZE + FIFO_2_SIZE); ++i, ptr++ ) 
     *(ptr) = 0;
 }/*}}}*/
-int max(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) {
-    int* count = (int*)shm + FIFO_1_CO;
-    int* front = (int*)shm + FIFO_1_FO;
+int max(int q) {/*{{{*/
+  int max = 0;
 
-    int max = 0;
-    for ( int i = 0; i < *count; i++ ) {
-      int index = (*front + i) % FIFO_1_SIZE;
-      int val = ((int*)shm)[FIFO_1_OFFSET + index];
-      if ( val > max ) max = val;
-    }
-    return max;
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm+FIFO_2_CO;
-    int* front = (int*)shm+FIFO_2_FO;
-    int max = 0;
+  for ( int i = 0; i < *count(q); i++ ) {
+    int index = (*front(q) + i) % size(q);
+    int val = ((int*)shm)[offset(q) + index];
 
-    for ( int i = 0; i < *count; i++ ) {
-      int index = (*front + i) % FIFO_2_SIZE;
-      int val = ((int*)shm)[FIFO_2_OFFSET + index];
-      if ( val > max ) max = val;
-    }
-    return max;
+    if ( val > max ) max = val;
   }
+  return max;
 }/*}}}*/
-int even_count(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) {
-    int* count = (int*)shm + FIFO_1_CO;
-    int* front = (int*)shm + FIFO_1_FO;
+int even_count(int q) {/*{{{*/
     int even = 0;
-    for ( int i = 0; i < *count; i++ ) {
-      int index = (*front + i) % FIFO_1_SIZE;
-      int val = ((int*)shm)[FIFO_1_OFFSET + index];
+    for ( int i = 0; i < *count(q); i++ ) {
+      int index = (*front(q) + i) % size(q);
+      int val = ((int*)shm)[offset(q) + index];
+
       if ( val % 2 == 0 ) even++;
     }
     return even;
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm+FIFO_2_CO;
-    int* front = (int*)shm+FIFO_2_FO;
-    int even = 0;
-    for ( int i = 0; i < *count; i++ ) {
-      int index = (*front + i) % FIFO_2_SIZE;
-      int val = ((int*)shm)[FIFO_2_OFFSET + index];
-      if ( val % 2 == 0 ) even++;
-    }
-    return even;
-  }
 }/*}}}*/
-int odd_count(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) {
-    int* count = (int*)shm + FIFO_1_CO;
-    int* front = (int*)shm + FIFO_1_FO;
-    int odd = 0;
-    for ( int i = 0; i < *count; i++ ) {
-      int index = (*front + i) % FIFO_1_SIZE;
-      int val = ((int*)shm)[FIFO_1_OFFSET + index];
-      if ( val % 2 != 0 ) odd++;
-    }
-    return odd;
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm+FIFO_2_CO;
-    int* front = (int*)shm+FIFO_2_FO;
-    int odd = 0;
-    for ( int i = 0; i < *count; i++ ) {
-      int index = (*front + i) % FIFO_2_SIZE;
-      int val = ((int*)shm)[FIFO_2_OFFSET + index];
-      if ( val % 2 != 0 ) odd++;
-    }
-    return odd;
+int odd_count(int q) {/*{{{*/
+  int odd = 0;
+  for ( int i = 0; i < *count(q); i++ ) {
+    int index = (*front(q) + i) % size(q);
+    int val = ((int*)shm)[offset(q) + index];
+
+    if ( val % 2 != 0 ) odd++;
   }
+  return odd;
 }/*}}}*/
-void put(int fifo, int val) {/*{{{*/
-  if ( fifo == FIFO_1 ) { 
-    int* count = (int*)shm + FIFO_1_CO;
-    int* front = (int*)shm + FIFO_1_FO;
-    int* p = (int*)shm;
+void put(int q, int val) {/*{{{*/
+  int* p = (int*)shm;
 
-    if ( *count < FIFO_1_SIZE ) {
-      int index = (*count + *front) % FIFO_1_SIZE;
-      p[FIFO_1_OFFSET + index] = val;
-      // Increase count value
-      ++*count;
-    } else 
-      printf("FIFO_1 FULL!\n");
+  if ( *count(q) < size(q) ) {
+    int index = (*count(q) + *front(q)) % size(q);
+    p[offset(q) + index] = val;
+    ++*count(q);
+  } else 
+    printf("FIFO_%d FULL!\n", q);
 
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm + FIFO_2_CO;
-    int* front = (int*)shm + FIFO_2_FO;
-    int* p = (int*)shm;
-
-    if ( *count < FIFO_2_SIZE ) {
-      int index = (*count + *front) % FIFO_2_SIZE;
-      p[FIFO_2_OFFSET + index] = val;
-      // Increase count
-      ++*count;
-    } else 
-      printf("FIFO_2 FULL!\n");
-  }
 
   V(a2);
   V(b1_1);
@@ -184,91 +153,42 @@ void put(int fifo, int val) {/*{{{*/
   V(b2_2);
 
 }/*}}}*/
-int get(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) { 
-    int* count = (int*)shm+FIFO_1_CO;
-    int* front = (int*)shm+FIFO_1_FO;
+int get(int q) {/*{{{*/
     int* p = (int*)shm;
     int val;
 
     if ( *count > 0 ) {
-      int index = *front % FIFO_1_SIZE;
-      val = p[FIFO_1_OFFSET + index];
-      p[FIFO_1_OFFSET + index] = 0;
-      // Decrease element count
-      --*count;
-      // Update front
-      ++*front;
+      int index = *front(q) % size(q);
+      val = p[offset(q) + index];
+      p[offset(q) + index] = 0;
+      --*count(q);
+      ++*front(q);
 
       V(a1);
       V(a3);
 
       return val;
     } else 
-      printf("FIFO_1 EMPTY!\n");
+      printf("FIFO_%d EMPTY!\n", q);
 
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm+FIFO_2_CO;
-    int* front = (int*)shm+FIFO_2_FO;
-    int* p = (int*)shm;
-    int val;
-    if ( *count > 0 ) {
-      int index = *front % FIFO_2_SIZE;
-      val = p[FIFO_2_OFFSET + index];
-      p[FIFO_2_OFFSET + index] = 0;
-      // Decrease element count
-      --*count;
-      // Update front
-      ++*front;
-
-      V(a1);
-      V(a3);
-
-      return val;
-    } else 
-      printf("FIFO_2 EMPTY!\n");
-  }
 }/*}}}*/
-int count(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 )  
-    return *((int*)shm + FIFO_1_CO);
-  else if ( fifo == FIFO_2 ) 
-    return *((int*)shm + FIFO_2_CO);
-}/*}}}*/
-int front(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 )  
-    return *(int*)shm + FIFO_1_FO;
-  else if ( fifo == FIFO_2 ) 
-    return *(int*)shm + FIFO_2_FO;
-}/*}}}*/
-int top(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) {
-    int* count = (int*)shm + FIFO_1_CO;
-    int* front = (int*)shm + FIFO_1_FO;
-    return (int)shm[FIFO_1_OFFSET + ((*front + *count) % FIFO_1_SIZE)];
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm+FIFO_2_CO;
-    int* front = (int*)shm+FIFO_2_FO;
-    return (int)shm[FIFO_2_OFFSET + ((*front + *count) % FIFO_2_SIZE)];
-  }
+int top(int q) {/*{{{*/
+  return (int)shm[offset(q) + ((*front(q) + *count(q)) % size(q))];
 }/*}}}*/
 void print_fifo(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) {
-    int* count = (int*)shm + FIFO_1_CO;
-    int* front = (int*)shm + FIFO_1_FO;
     int* p = (int*)shm+FIFO_1_OFFSET;
 
     printf("FIFO_1 (%d, %d, max: %d, oc: %d, ec: %d): \n", 
-      *front % FIFO_1_SIZE, *count,
-      max(FIFO_1), 
-      odd_count(FIFO_1),
-      even_count(FIFO_1));
-    for ( int i = 0; i < FIFO_1_SIZE; ++i ) {
-      if ( (i == *front % FIFO_1_SIZE) && (i == (*front + *count - 1) % FIFO_1_SIZE) )
+      *front(fifo) % size(fifo), *count(fifo),
+      max(fifo), 
+      odd_count(fifo),
+      even_count(fifo));
+    for ( int i = 0; i < size(fifo); ++i ) {
+      if ( (i == *front(fifo) % size(fifo)) && (i == (*front(fifo) + *count(fifo) - 1) % size(fifo)) )
         printf("<%d>  ", *p);
-      else if ( i == (*front % FIFO_1_SIZE) ) 
+      else if ( i == (*front(fifo) % size(fifo)) ) 
         printf("<%d  ", *p);
-      else if ( i == (*front + *count - 1) % FIFO_1_SIZE ) 
+      else if ( i == (*front(fifo) + *count(fifo) - 1) % size(fifo) ) 
         printf("%d>  ", *p);
       else
         printf("%d  ", *p);
@@ -277,30 +197,6 @@ void print_fifo(int fifo) {/*{{{*/
     }
     printf("\n");
 
-  } else if ( fifo == FIFO_2 ) {
-    int* count = (int*)shm+FIFO_2_CO;
-    int* front = (int*)shm+FIFO_2_FO;
-    int* p = (int*)shm+FIFO_2_OFFSET;
-
-    printf("FIFO_2 (%d, %d, max: %d, oc: %d, ec: %d): \n", 
-      *front % FIFO_2_SIZE, *count,
-      max(FIFO_2), 
-      odd_count(FIFO_2),
-      even_count(FIFO_2));
-
-    for ( int i = 0; i < FIFO_2_SIZE; ++i ) {
-      if ( (i == *front % FIFO_2_SIZE) && (i == (*front + *count - 1) % FIFO_2_SIZE) )
-        printf("<%d>  ", *p);
-      else if ( i == *front % FIFO_2_SIZE) 
-        printf("<%d  ", *p);
-      else if ( i == (*front + *count - 1) % FIFO_2_SIZE ) 
-        printf("%d>  ", *p);
-      else
-        printf("%d  ", *p);
-      p++;
-    }
-    printf("\n");
-  }
 }/*}}}*/
 void shm_at() {/*{{{*/
   // Attaches shared memory block to process
@@ -362,7 +258,7 @@ void A2_p() {/*{{{*/
   while(1) {
     printf("A2 loop\n");
 
-    if ( count(FIFO_1) < 30 ) {
+    if ( *count(FIFO_1) < 30 ) {
       P(mutex);
         put(FIFO_1, number);
       V(mutex);
@@ -385,7 +281,7 @@ void A3_p() {/*{{{*/
   while(1) {
     // printf("A3 loop\\n");
 
-    if ( count(FIFO_2) < 20 ) {
+    if ( *count(FIFO_2) < 20 ) {
       P(mutex);
         put(FIFO_2, number);
       V(mutex);
@@ -407,14 +303,14 @@ void B1_p() {/*{{{*/
   while(1) {
     // printf("B1 loop\\n");
 
-    if ( (count(FIFO_1) >= 6) && (top(FIFO_1) % 2 == 0) ) {
+    if ( (*count(FIFO_1) >= 6) && (top(FIFO_1) % 2 == 0) ) {
       P(mutex);
         get(FIFO_1);
       V(mutex);
     } else 
       P(b1_1);
 
-    if ( (count(FIFO_2) >= 6) && (top(FIFO_2) % 2 == 0) ) {
+    if ( (*count(FIFO_2) >= 6) && (top(FIFO_2) % 2 == 0) ) {
       P(mutex);
         get(FIFO_2);
       V(mutex);
@@ -434,7 +330,7 @@ void B2_p() {/*{{{*/
   while(1) {
     // printf("B2\\n");
 
-    if ( (count(FIFO_1) >= 7) && (top(FIFO_1) % 2 != 0) ) {
+    if ( (*count(FIFO_1) >= 7) && (top(FIFO_1) % 2 != 0) ) {
       P(mutex);
         get(FIFO_1);
       V(mutex);
@@ -442,7 +338,7 @@ void B2_p() {/*{{{*/
       P(b2_1);
 
 
-    if ( (count(FIFO_2) >= 7) && (top(FIFO_2) % 2 != 0) ) {
+    if ( (*count(FIFO_2) >= 7) && (top(FIFO_2) % 2 != 0) ) {
       P(mutex);
         get(FIFO_2);
       V(mutex);
