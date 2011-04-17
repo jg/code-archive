@@ -79,16 +79,16 @@ int *front(int q) {/*{{{*/
     return (int*)shm + FIFO_2_FO;
   
 }/*}}}*/
-int size(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) 
+int size(int q) {/*{{{*/
+  if ( q == FIFO_1 ) 
     return FIFO_1_SIZE;
-  else if ( fifo == FIFO_2 )
+  else if ( q == FIFO_2 )
     return FIFO_2_SIZE;
 }/*}}}*/
-int offset(int fifo) {/*{{{*/
-  if ( fifo == FIFO_1 ) 
+int offset(int q) {/*{{{*/
+  if ( q == FIFO_1 ) 
     return FIFO_1_OFFSET;
-  else if ( fifo == FIFO_2 )
+  else if ( q == FIFO_2 )
     return FIFO_2_OFFSET;
 }/*}}}*/
 void init_fifo() {/*{{{*/
