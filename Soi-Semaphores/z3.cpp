@@ -64,30 +64,28 @@ semaphore b1_2 = create_semaphore(1);
 semaphore b2_1 = create_semaphore(1);
 semaphore b2_2 = create_semaphore(1);
 /*}}}*/
-int *count(int fifo) {/*{{{*/
-  // Returns pointer to FIFO element count
-  if ( fifo == FIFO_1 ) 
+int *count(int q) {/*{{{*/
+  // Returns pointer to integer containing queue element count
+  if ( q == FIFO_1 ) 
     return (int*)shm + FIFO_1_CO;
   else
     return (int*)shm + FIFO_2_CO;
 }/*}}}*/
-int *front(int fifo) {/*{{{*/
-  // Returns pointer to first FIFO element 
-  if ( fifo == FIFO_1 ) 
+int *front(int q) {/*{{{*/
+  // Returns pointer to integer containing first queue element index
+  if ( q == FIFO_1 ) 
     return (int*)shm + FIFO_1_FO;
   else
     return (int*)shm + FIFO_2_FO;
   
 }/*}}}*/
 int size(int fifo) {/*{{{*/
-  // FIFO size 
   if ( fifo == FIFO_1 ) 
     return FIFO_1_SIZE;
   else if ( fifo == FIFO_2 )
     return FIFO_2_SIZE;
 }/*}}}*/
 int offset(int fifo) {/*{{{*/
-  // FIFO offset
   if ( fifo == FIFO_1 ) 
     return FIFO_1_OFFSET;
   else if ( fifo == FIFO_2 )
@@ -136,6 +134,7 @@ int odd_count(int q) {/*{{{*/
   return odd;
 }/*}}}*/
 void put(int q, int val) {/*{{{*/
+  // Inserts element to FIFO
   int* p = (int*)shm;
 
   if ( *count(q) < size(q) ) {
@@ -154,22 +153,23 @@ void put(int q, int val) {/*{{{*/
 
 }/*}}}*/
 int get(int q) {/*{{{*/
-    int* p = (int*)shm;
-    int val;
+  // Removes & returns element from FIFO
+  int* p = (int*)shm;
+  int val;
 
-    if ( *count > 0 ) {
-      int index = *front(q) % size(q);
-      val = p[offset(q) + index];
-      p[offset(q) + index] = 0;
-      --*count(q);
-      ++*front(q);
+  if ( *count(q) > 0 ) {
+    int index = *front(q) % size(q);
+    val = p[offset(q) + index];
+    p[offset(q) + index] = 0;
+    --*count(q);
+    ++*front(q);
 
-      V(a1);
-      V(a3);
+    V(a1);
+    V(a3);
 
-      return val;
-    } else 
-      printf("FIFO_%d EMPTY!\n", q);
+    return val;
+  } else 
+    printf("FIFO_%d EMPTY!\n", q);
 
 }/*}}}*/
 int top(int q) {/*{{{*/
